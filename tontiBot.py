@@ -92,18 +92,26 @@ def piropo(bot, update):
 def addDefensePhrase(bot, update):
     upDict = update.to_dict()
 
-def audioTest(bot, update):
-    try:
-        print("Testing audio files")
-        text = " ".join(update.to_dict()["message"]["text"].split(" ")[1:])
-        print("testing with {}".format(text))
-        filename = getAudioFromText(text)
-        bot.send_audio(update.message.chat_id, "http://137.74.112.195:8111/{}".format(filename))
-    except Exception as ex:
-        print(ex)
-
 def getChatId(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text=update.message.chat_id)
+
+def say(bot, update, update_queue=None):
+    try:
+        sender = update.to_dict()["message"]["from"]["first_name"]
+        bot.sendMessage(chat_id=update.message.chat_id, text='Vaaale. Qué quieres que le diga? (si me dices "Fuck" lo dejo todo)')
+        message = update_queue.get().message
+        if message.sticker:
+            bot.sendSticker(chat_id=groupChatId, sticker=message.sticker.file_id)
+        else:
+            text = message.text
+            if text == "Fuck":
+                bot.sendMessage(chat_id=update.message.chat_id, text='Vaaale, Me callo')
+                return
+            filename = getAudioFromText(text)
+            bot.send_audio(update.message.chat_id, "http://137.74.112.195:8111/{}".format(filename))
+        bot.sendMessage(chat_id=update.message.chat_id, text='Hecho :wink:')
+    except Exception as ex:
+        print(ex)
 
 def help(bot, update):
     helpText = """
@@ -119,8 +127,8 @@ def help(bot, update):
 start_handler = CommandHandler('start', start1)
 dispatcher.add_handler(start_handler)
 
-audioTest_handler = CommandHandler('diles', audioTest)
-dispatcher.add_handler(audioTest_handler)
+di_handler = CommandHandler('diles', say)
+dispatcher.add_handler(di_handler)
 
 piropo_handler = CommandHandler('piropo', piropo)
 dispatcher.add_handler(piropo_handler)
@@ -145,7 +153,5 @@ schedule.every().day.at("11:37").do(claratorio)
 
 
 updater.start_polling()
-
-app.run("0.0.0.0", "8111")
-
 print("Tontico is ready :)")
+app.run("0.0.0.0", "8111")
