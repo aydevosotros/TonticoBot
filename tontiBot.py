@@ -110,7 +110,7 @@ def reply_to_query(bot, update):
                     bot.sendMessage(chat_id=update.message.chat_id, text="No he pillado el número, así que paso de ti")
                     setChatCommand(chatId, None)
                     del chatData[chatId]
-                bot.sendChatAction(chat_id=chatId, action=telegram.ChatAction.RECORD_AUDIO)
+                bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.RECORD_AUDIO)
                 tFile = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
                 tFile.close()
                 r = requests.get(chatData[chatId][songId]["url"], stream=True)
