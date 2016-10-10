@@ -33,14 +33,6 @@ chatCommandLock = Lock()
 chatCommand = dict()
 allowedLangsSpeech = ["en", "ca", "es"]
 
-def textToSpeech(text):
-    lang = detect(text)
-    if lang not in allowedLangsSpeech:
-        lang = "es"
-    b = BytesIO()
-    fp = BufferedWriter(b)
-    gTTS(text=text, lang="es").write_to_fp(fp)
-    return b
 
 def speak(bot, update):
     try:
