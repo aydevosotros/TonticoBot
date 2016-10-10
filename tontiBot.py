@@ -18,6 +18,7 @@ from threading import Lock
 import lyricwikia
 from langdetect import detect
 from io import BytesIO, BufferedReader, BufferedWriter
+import tempfile
 
 app = Flask(__name__, static_folder='public', static_url_path='')
 
