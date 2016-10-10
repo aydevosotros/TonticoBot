@@ -20,6 +20,7 @@ from langdetect import detect
 from io import BytesIO, BufferedReader, BufferedWriter
 import tempfile
 
+
 app = Flask(__name__, static_folder='public', static_url_path='')
 
 updater = Updater("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
