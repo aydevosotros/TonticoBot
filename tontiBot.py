@@ -20,6 +20,7 @@ from langdetect import detect
 from io import BytesIO, BufferedReader, BufferedWriter
 import wrappers
 import tempfile
+from pydub import AudioSegment
 
 
 app = Flask(__name__, static_folder='public', static_url_path='')
@@ -32,6 +33,7 @@ groupChatId = -172831566
 chatCommandLock = Lock()
 chatCommand = dict()
 allowedLangsSpeech = ["en", "ca", "es"]
+chatData = dict()
 
 
 def speak(bot, update):
@@ -86,20 +88,33 @@ def reply_to_query(bot, update):
                     bot.sendMessage(chat_id=update.message.chat_id, text='😉')
             setChatCommand(chatId, None)
         elif command == "sing":
-            lyric = None
-            params = re.search("(.*) - (.*)", update.message.text).groups()
-            if params is None or len(params) != 2:
-                bot.sendMessage(chat_id=update.message.chat_id, text='Jo, creo que no lo has escrito bien...')
-                return
-            try:
-                lyric = lyricwikia.get_lyrics(params[0], params[1])
-            except Exception:
-                bot.sendMessage(chat_id=update.message.chat_id, text='Jo, parece que no he encontrado la canción...')
-                return
-            lyric = [p for p in lyric.split("\n\n") if len(p) > 0]
-            filename = getAudioFromText(lyric[randint(0, len(lyric)-1)])
-            bot.send_voice(groupChatId, open("/home/antonio/public/{}".format(filename), "rb"))
-            bot.sendMessage(chat_id=update.message.chat_id, text='😉')
+            if chatId not in chatData:
+                songList = wrappers.searchInVK(update.message.text)
+                replyTextTemplate = "Ok, esto es lo que me se:\n{}\n Dime un número."
+                bot.sendMessage(chat_id=update.message.chat_id, text=replyTextTemplate.format("\n".join(["{}. {} ({})".format(i, song["name"], song["artist"]) for i, song in enumerate(songList[:5])])))
+                chatData[chatId] = songList
+                # bot.send_voice(groupChatId, open("/home/antonio/public/{}".format(filename), "rb"))
+                # bot.sendMessage(chat_id=update.message.chat_id, text='😉')
+            else:
+                try:
+                    songId = int(update.message.text)
+                except Exception:
+                    bot.sendMessage(chat_id=update.message.chat_id, text="No he pillado el número, así que paso de ti")
+                    setChatCommand(chatId, None)
+                    del chatData[chatId]
+                bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.RECORD_AUDIO)
+                tFile = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                tFile.close()
+                r = requests.get(chatData[chatId][songId]["url"], stream=True)
+                if r.status_code == 200:
+                    with open(tFile.name, "wb") as f:
+                        for chunk in r:
+                            f.write(chunk)
+                print(tFile.name)
+                AudioSegment.from_mp3(tFile.name)[:30000].export(tFile.name, format="mp3")
+                bot.send_voice(groupChatId, open(tFile.name, "rb"))
+                del chatData[chatId]
+                setChatCommand(chatId, None)
         elif command == "piropo":
             phrases = []
             with open("/home/antonio/piropos.txt") as iFile:
@@ -111,6 +126,7 @@ def reply_to_query(bot, update):
                 bot.send_voice(groupChatId, open("/home/antonio/public/{}".format(filename), "rb"))
             except Exception as ex:
                 print(ex)
+            setChatCommand(chatId, None)
 
     except Exception as ex:
         print(ex)
@@ -126,7 +142,7 @@ def sayTo(bot, update):
 def sing(bot, update):
     try:
         chatId = update.message.chat.id
-        bot.sendMessage(chat_id=update.message.chat_id, text='Pero... Venga... Dime autor y canción... (Formato: artista - canción)')
+        bot.sendMessage(chat_id=update.message.chat_id, text='Pero... Venga... Qué quieres que cante (si me dices "Fuck" lo dejo todo)')
         setChatCommand(chatId, "sing")
     except Exception as ex:
         print(ex)
