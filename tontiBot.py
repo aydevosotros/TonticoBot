@@ -15,15 +15,13 @@ import os
 from gtts import gTTS
 import re
 from threading import Lock
-import lyricwikia
 from langdetect import detect
-from io import BytesIO, BufferedReader, BufferedWriter
 import wrappers
 import tempfile
 from pydub import AudioSegment
 
+# SQLAlchemy stuff
 
-app = Flask(__name__, static_folder='public', static_url_path='')
 
 updater = Updater("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
 bot = telegram.Bot("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
@@ -35,6 +33,15 @@ chatCommand = dict()
 allowedLangsSpeech = ["en", "ca", "es"]
 chatData = dict()
 
+
+class TontiBot():
+    """ Toti bot class """
+
+    def __init__(botToken):
+        self.botToken = botToken
+
+
+class
 
 def speak(bot, update):
     try:
