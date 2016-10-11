@@ -26,7 +26,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('sqlite:///tontiBot.sqlite', echo=True)
 Base = declarative_base()
 
 groupChatId = -172831566
@@ -39,13 +38,18 @@ chatData = dict()
 class TontiBot():
     """ Toti bot class """
 
-    def __init__(botToken):
+    def __init__(self, botToken):
         self.botToken = botToken
         self.bot = telegram.Bot(botToken)
 
         # Init data persistance if not exists
+        self.engine = create_engine('sqlite:///tontiBot.sqlite', echo=True)
         if not os.path.exists("tontiBot.sqlite"):
-            Base.metadata.create_all(engine)
+            Base.metadata.create_all(self.engine)
+        self.session = sessionmaker(bind=self.engine)
+
+    def registerGroup(self, idGroupChat):
+        self.session.add(Group(idGroupChat))
 
 
 class Group(Base):
@@ -54,6 +58,12 @@ class Group(Base):
 
     id = Column(Integer, primary_key)
     name = Column(String)
+
+    def __init__(self, chatId):
+
+
+    def __repr__(self):
+        return "Group: {}".format(name)
 
 def speak(bot, update):
     try:
