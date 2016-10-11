@@ -60,7 +60,7 @@ class Group(Base):
     name = Column(String)
 
     def __init__(self, chatId):
-
+        
 
     def __repr__(self):
         return "Group: {}".format(name)
