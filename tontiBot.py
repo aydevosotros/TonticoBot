@@ -21,11 +21,13 @@ import tempfile
 from pydub import AudioSegment
 
 # SQLAlchemy stuff
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import sessionmaker
 
-
-updater = Updater("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
-bot = telegram.Bot("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
-dispatcher = updater.dispatcher
+engine = create_engine('sqlite:///tontiBot.sqlite', echo=True)
+Base = declarative_base()
 
 groupChatId = -172831566
 chatCommandLock = Lock()
@@ -39,9 +41,19 @@ class TontiBot():
 
     def __init__(botToken):
         self.botToken = botToken
+        self.bot = telegram.Bot(botToken)
+
+        # Init data persistance if not exists
+        if not os.path.exists("tontiBot.sqlite"):
+            Base.metadata.create_all(engine)
 
 
-class
+class Group(Base):
+
+    __tablename__ = "groups"
+
+    id = Column(Integer, primary_key)
+    name = Column(String)
 
 def speak(bot, update):
     try:

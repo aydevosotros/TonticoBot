@@ -38,7 +38,12 @@ def main():
     config = yaml.load(open(args.configFile))
     print(bot.getChat(-172831566))
 
+    updater = Updater(config["bot"]["token"])
+    bot = telegram.Bot("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
+
     # Event suscription:
+    dispatcher = updater.dispatcher
+
     start_handler = CommandHandler('start', start1)
     dispatcher.add_handler(start_handler)
 
