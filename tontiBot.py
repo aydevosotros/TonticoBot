@@ -35,7 +35,7 @@ allowedLangsSpeech = ["en", "ca", "es"]
 chatData = dict()
 
 
-class TontiBot():
+class TontiBot(object):
     """ Toti bot class """
 
     def __init__(self, botToken):
@@ -56,11 +56,11 @@ class Group(Base):
 
     __tablename__ = "groups"
 
-    id = Column(Integer, primary_key)
+    id = Column(Integer, primary_key=True)
     name = Column(String)
 
     def __init__(self, chatId):
-        
+        pass
 
     def __repr__(self):
         return "Group: {}".format(name)
@@ -277,54 +277,5 @@ def error(bot, update, err):
     bot.sendMessage(chat_id=update.message.chat_id, text="He petado de mala manera... Si podéis decírselo a Antonio")
     print('Update "%s" caused error "%s"' % (update, err))
 
-start_handler = CommandHandler('start', start1)
-dispatcher.add_handler(start_handler)
-
-llora_handler = CommandHandler('llora', llora)
-dispatcher.add_handler(llora_handler)
-
-diles_handler = CommandHandler('diles', sayTo)
-dispatcher.add_handler(diles_handler)
-
-sing_handler = CommandHandler('sing', sing)
-dispatcher.add_handler(sing_handler)
-
-audioTest_handler = CommandHandler('audioTest', audioTest)
-dispatcher.add_handler(audioTest_handler)
-
-testButtons_handler = CommandHandler('butons', testButtons)
-dispatcher.add_handler(testButtons_handler)
-
-piropo_handler = CommandHandler('piropo', piropo)
-dispatcher.add_handler(piropo_handler)
-
-greeting_handler = CommandHandler('greeting', saluda)
-dispatcher.add_handler(greeting_handler)
-
-joke_handler = CommandHandler('chiste', joke)
-dispatcher.add_handler(joke_handler)
-
-chatId_handler = CommandHandler('giveMeId', getChatId)
-dispatcher.add_handler(chatId_handler)
-
-defense_handler = CommandHandler('meteteCon', defense)
-dispatcher.add_handler(defense_handler)
-
-help_handler = CommandHandler('help', help)
-dispatcher.add_handler(help_handler)
-
-describe_handler = CommandHandler('describe', describeMessage)
-dispatcher.add_handler(describe_handler)
-
-speak_handler = CommandHandler('speak', speak)
-dispatcher.add_handler(speak_handler)
-
-dispatcher.add_handler(MessageHandler([Filters.text], reply_to_query))
-
 # Timers
 schedule.every().day.at("11:37").do(claratorio)
-
-
-updater.start_polling()
-print("Tontico is ready :)")
-updater.idle()

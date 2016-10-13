@@ -5,6 +5,7 @@ import sys
 import os
 import yaml
 import logging
+import tontiBot
 
 from telegram.ext import Updater, MessageHandler, CommandHandler, Filters
 import telegram
@@ -24,6 +25,13 @@ logger.addHandler(fileHandler)
 updater = Updater("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
 bot = telegram.Bot("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
 
+def status_update(bot, update):
+    print("Gotten update")
+    print(update.to_dict())
+
+def describeMessage(bot, update):
+    print(update.to_dict())
+
 def main():
     # Getting arguments and options
     parser = argparse.ArgumentParser()
@@ -39,11 +47,11 @@ def main():
     print(bot.getChat(-172831566))
 
     updater = Updater(config["bot"]["token"])
-
-    tontiBot = tontiBot.TontiBot(config["bot"]["token"])
+    tBot = tontiBot.TontiBot(config["bot"]["token"])
 
     # Event suscription:
     dispatcher = updater.dispatcher
+    dispatcher.add_handler(MessageHandler([Filters.status_update], status_update))
 
     # start_handler = CommandHandler('start', tontiBot.start)
     # dispatcher.add_handler(start_handler)
@@ -81,15 +89,15 @@ def main():
     # help_handler = CommandHandler('help', tontiBot.help)
     # dispatcher.add_handler(help_handler)
     #
-    # describe_handler = CommandHandler('describe', tontiBot.describeMessage)
-    # dispatcher.add_handler(describe_handler)
+    describe_handler = CommandHandler('describe', describeMessage)
+    dispatcher.add_handler(describe_handler)
     #
     # speak_handler = CommandHandler('speak', tontiBot.speak)
     # dispatcher.add_handler(speak_handler)
 
-    # updater.start_webhook(listen='127.0.0.1', port=5000, url_path='TOKEN1')
-    # updater.bot.setWebhook(url='https://ialab.es/tontiBot',
-    #                        certificate=open('cert.pem', 'rb'))
+    updater.start_webhook(listen='127.0.0.1', port=5000, url_path='tontibot')
+    updater.bot.setWebhook(url='https://ialab.es/tontiBot',
+                           certificate=open('/home/antonio/keys/fullchain.pem', 'rb'))
 
 if __name__ == '__main__':
     main()
