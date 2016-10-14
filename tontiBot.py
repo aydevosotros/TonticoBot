@@ -51,11 +51,16 @@ class TontiBot(object):
     def registerGroup(self, idGroupChat):
         self.session.add(Group(idGroupChat))
 
-    def _groupUpdate(bot, update):
+    def _groupUpdate(self, bot, update):
         pass
 
-    def _chatUpdate(bot, update):
+    def _chatUpdate(self, bot, update):
         pass
+
+    def update(self, bot, update):
+        pass
+
+
 
 
 def speak(bot, update):
