@@ -36,11 +36,14 @@ chatData = dict()
 class TontiBot(object):
     """ Toti bot class """
 
-    def __init__(self, botToken, freeSoundConfig):
+    def __init__(self, botToken):
         self.botToken = botToken
         self.bot = telegram.Bot(botToken)
 
-        self.freeSoundConfig = freeSoundConfig
+        self.chatCommandLock = Lock()
+        self.chatCommand = dict()
+        self.allowedLangsSpeech = ["en", "ca", "es"]
+        self.chatData = dict()
 
         # Init data persistance if not exists
         self.engine = create_engine('sqlite:///tontiBot.sqlite', echo=True)
@@ -52,6 +55,7 @@ class TontiBot(object):
         self.session.add(Group(idGroupChat))
 
     def _groupUpdate(self, bot, update):
+        # Check if user if known. Add to the group users if not
         pass
 
     def _chatUpdate(self, bot, update):
