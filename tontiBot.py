@@ -19,6 +19,7 @@ from langdetect import detect
 import wrappers
 import tempfile
 from pydub import AudioSegment
+import logging
 
 # SQLAlchemy stuff
 from sqlalchemy import create_engine
@@ -86,22 +87,23 @@ def getAudioFromText(text):
     return filename.split("/")[-1]
 
 def setChatCommand(chatId, command):
-    with chatCommandLock:
-        chatCommand[chatId] = command
+    # with chatCommandLock:
+    chatCommand[chatId] = command
 
 def getChatCommand(chatId):
-    if chatId in chatCommand:
-        return chatCommand[chatId]
+    # if chatId in chatCommand:
+    return chatCommand[chatId]
 
 def reply_to_query(bot, update):
     try:
         chatId = update.message.chat.id
         command = getChatCommand(chatId)
-        print("Gotten a query")
+        print("Gotten a query {}, {}".format(chatId, command))
         if command is None:
             bot.sendMessage(chat_id=update.message.chat_id, text='No me has dado ninguna orden, mi am@')
             help()
         elif command == "sayTo":
+            print("Command sayTo")
             message = update.message
             if message.sticker:
                 bot.sendSticker(chat_id=groupChatId, sticker=message.sticker.file_id)
@@ -113,6 +115,7 @@ def reply_to_query(bot, update):
                     bot.sendMessage(chat_id=update.message.chat_id, text='Vaaale, Me callo')
                 else:
                     filename = getAudioFromText(text)
+                    logging.info("Sending message {} to {}".format(filename, groupChatId))
                     bot.send_voice(groupChatId, open("/home/antonio/public/{}".format(filename), "rb"))
                     bot.sendMessage(chat_id=update.message.chat_id, text='😉')
             setChatCommand(chatId, None)

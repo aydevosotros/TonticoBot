@@ -22,15 +22,13 @@ fileHandler.setFormatter(logging.Formatter('%(asctime)s - %(module)s - %(levelna
 logger.addHandler(fileHandler)
 
 
-updater = Updater("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
-bot = telegram.Bot("259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8")
-
 def status_update(bot, update):
-    print("Gotten update")
-    print(update.to_dict())
+    logger.info("Gotten update")
+    logger.info(update.to_dict())
 
 def describeMessage(bot, update):
-    print(update.to_dict())
+    print("Hola")
+    logger.info(update.to_dict())
 
 def main():
     # Getting arguments and options
@@ -44,14 +42,18 @@ def main():
         logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
     config = yaml.load(open(args.configFile))
-    print(bot.getChat(-172831566))
 
     updater = Updater(config["bot"]["token"])
     tBot = tontiBot.TontiBot(config["bot"]["token"])
+    # print(tBot.getChat(-172831566))
+
+    logger.info("Starting bot")
 
     # Event suscription:
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(MessageHandler([Filters.status_update], status_update))
+    # dispatcher.add_handler(MessageHandler([Filters.text], status_update))
+    dispatcher.add_handler(MessageHandler([Filters.text], tontiBot.reply_to_query))
+    print(len(dispatcher.handlers))
 
     # start_handler = CommandHandler('start', tontiBot.start)
     # dispatcher.add_handler(start_handler)
@@ -59,8 +61,8 @@ def main():
     # llora_handler = CommandHandler('llora', tontiBot.llora)
     # dispatcher.add_handler(llora_handler)
     #
-    # diles_handler = CommandHandler('diles', tontiBot.sayTo)
-    # dispatcher.add_handler(diles_handler)
+    diles_handler = CommandHandler('diles', tontiBot.sayTo)
+    dispatcher.add_handler(diles_handler)
     #
     # sing_handler = CommandHandler('sing', tontiBot.sing)
     # dispatcher.add_handler(sing_handler)
@@ -77,8 +79,8 @@ def main():
     # greeting_handler = CommandHandler('greeting', tontiBot.saluda)
     # dispatcher.add_handler(greeting_handler)
     #
-    # joke_handler = CommandHandler('chiste', tontiBot.joke)
-    # dispatcher.add_handler(joke_handler)
+    joke_handler = CommandHandler('chiste', tontiBot.joke)
+    dispatcher.add_handler(joke_handler)
     #
     # chatId_handler = CommandHandler('giveMeId', tontiBot.getChatId)
     # dispatcher.add_handler(chatId_handler)
@@ -95,9 +97,12 @@ def main():
     # speak_handler = CommandHandler('speak', tontiBot.speak)
     # dispatcher.add_handler(speak_handler)
 
-    updater.start_webhook(listen='127.0.0.1', port=5000, url_path='tontibot')
-    updater.bot.setWebhook(url='https://ialab.es/tontiBot',
-                           certificate=open('/home/antonio/keys/fullchain.pem', 'rb'))
+    logger.info("Starting server")
+    # updater.start_webhook(listen='127.0.0.1', port=5000, url_path='tontibot')
+    # updater.bot.setWebhook(url='https://ialab.es/tontibot',
+    #                        certificate=open('/home/antonio/keys/fullchain.pem', 'rb'))
+    updater.start_polling()
+    logger.info("Running")
 
 if __name__ == '__main__':
     main()
