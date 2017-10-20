@@ -5,7 +5,7 @@ import sys
 import os
 import yaml
 import logging
-import tontiBot
+from tonticobot import TontiBot
 
 from telegram.ext import Updater, MessageHandler, CommandHandler, Filters
 import telegram
@@ -68,10 +68,23 @@ def main():
 
     config = yaml.load(open(args.configFile))
 
-    # updater = Updater(config["bot"]["token"])
+    updater = Updater(config["bot"]["token"])
     logger.info("Starting bot")
-    tBot = tontiBot.TontiBot(config["bot"]["token"])
+    tBot = TontiBot(config["bot"]["token"])
     # print(tBot.getChat(-172831566))
 
     groupsChatPath = config["others"]["groupsChatPath"]
-    if not os.path.exists(groupsChat
+    if not os.path.exists(groupsChatPath):
+        os.makedirs(groupsChatPath)
+
+    logger.info("Starting bot")
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(MessageHandler([Filters.text], tontiBot.reply_to_query))
+    diles_handler = CommandHandler('diles', tontiBot.sayTo)
+    dispatcher.add_handler(diles_handler)
+
+    joke_handler = CommandHandler('chiste', tontiBot.joke)
+    dispatcher.add_handler(joke_handler)
+
+    logger.info("Starting server")
+    updater.start_polling()
