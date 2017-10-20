@@ -10,6 +10,9 @@ import tontiBot
 from telegram.ext import Updater, MessageHandler, CommandHandler, Filters
 import telegram
 
+from telegram.error import (TelegramError, Unauthorized, BadRequest,
+                            TimedOut, ChatMigrated, NetworkError)
+
 
 # Getting the logger instance
 logger = logging.getLogger()
@@ -30,6 +33,28 @@ def describeMessage(bot, update):
     print("Hola")
     logger.info(update.to_dict())
 
+def error_callback(bot, update, error):
+    try:
+        raise error
+    except Unauthorized:
+        # remove update.message.chat_id from conversation list
+        print(error)
+    except BadRequest:
+        # handle malformed requests - read more below!
+        print(error)
+    except TimedOut:
+        # handle slow connection problems
+        print(error)
+    except NetworkError:
+        # handle other connection problems
+        print(error)
+    except ChatMigrated as e:
+        # the chat_id of a group has changed, use e.new_chat_id instead
+        print(error)
+    except TelegramError:
+        # handle all other telegram related errors
+        print(error)
+
 def main():
     # Getting arguments and options
     parser = argparse.ArgumentParser()
@@ -43,66 +68,15 @@ def main():
 
     config = yaml.load(open(args.configFile))
 
-    updater = Updater(config["bot"]["token"])
+    # updater = Updater(config["bot"]["token"])
+    logger.info("Starting bot")
     tBot = tontiBot.TontiBot(config["bot"]["token"])
     # print(tBot.getChat(-172831566))
 
-    logger.info("Starting bot")
+    groupsChatPath = config["others"]["groupsChatPath"]
+    if not os.path.exists(groupsChatPath):
+        os.makedirs(groupsChatPath)
 
-    # Event suscription:
-    dispatcher = updater.dispatcher
-    # dispatcher.add_handler(MessageHandler([Filters.text], status_update))
-    dispatcher.add_handler(MessageHandler([Filters.text], tontiBot.reply_to_query))
-    print(len(dispatcher.handlers))
-
-    # start_handler = CommandHandler('start', tontiBot.start)
-    # dispatcher.add_handler(start_handler)
-    #
-    # llora_handler = CommandHandler('llora', tontiBot.llora)
-    # dispatcher.add_handler(llora_handler)
-    #
-    diles_handler = CommandHandler('diles', tontiBot.sayTo)
-    dispatcher.add_handler(diles_handler)
-    #
-    # sing_handler = CommandHandler('sing', tontiBot.sing)
-    # dispatcher.add_handler(sing_handler)
-    #
-    # audioTest_handler = CommandHandler('audioTest', tontiBot.audioTest)
-    # dispatcher.add_handler(audioTest_handler)
-    #
-    # testButtons_handler = CommandHandler('butons', tontiBot.testButtons)
-    # dispatcher.add_handler(testButtons_handler)
-    #
-    # piropo_handler = CommandHandler('piropo', tontiBot.piropo)
-    # dispatcher.add_handler(piropo_handler)
-    #
-    # greeting_handler = CommandHandler('greeting', tontiBot.saluda)
-    # dispatcher.add_handler(greeting_handler)
-    #
-    joke_handler = CommandHandler('chiste', tontiBot.joke)
-    dispatcher.add_handler(joke_handler)
-    #
-    # chatId_handler = CommandHandler('giveMeId', tontiBot.getChatId)
-    # dispatcher.add_handler(chatId_handler)
-    #
-    # defense_handler = CommandHandler('meteteCon', tontiBot.defense)
-    # dispatcher.add_handler(defense_handler)
-    #
-    # help_handler = CommandHandler('help', tontiBot.help)
-    # dispatcher.add_handler(help_handler)
-    #
-    describe_handler = CommandHandler('describe', describeMessage)
-    dispatcher.add_handler(describe_handler)
-    #
-    # speak_handler = CommandHandler('speak', tontiBot.speak)
-    # dispatcher.add_handler(speak_handler)
-
-    logger.info("Starting server")
-    # updater.start_webhook(listen='127.0.0.1', port=5000, url_path='tontibot')
-    # updater.bot.setWebhook(url='https://ialab.es/tontibot',
-    #                        certificate=open('/home/antonio/keys/fullchain.pem', 'rb'))
-    updater.start_polling()
-    logger.info("Running")
 
 if __name__ == '__main__':
     main()

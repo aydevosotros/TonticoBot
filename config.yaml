@@ -1,2 +1,7 @@
 bot:
   token: 259443067:AAEime5UnPucBBXzt3jll5Oct4CTuHrMbX8
+db:
+  user: tontico
+  pass: tonticodb987
+others:
+  groupsChatPath: ./chats
