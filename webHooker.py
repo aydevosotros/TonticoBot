@@ -74,9 +74,4 @@ def main():
     # print(tBot.getChat(-172831566))
 
     groupsChatPath = config["others"]["groupsChatPath"]
-    if not os.path.exists(groupsChatPath):
-        os.makedirs(groupsChatPath)
-
-
-if __name__ == '__main__':
-    main()
+    if not os.path.exists(groupsChat

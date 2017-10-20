@@ -26,7 +26,11 @@ import time
 from tempfile import NamedTemporaryFile
 from resources import seq2seq_model
 
-# Base = declarative_base()
+# SQLAlchemy stuff
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from models import *
 
 groupChatId = -216277721
 chatCommandLock = Lock()
@@ -171,28 +175,4 @@ def piropo(bot, update):
 def testButtons(bot, update, update_queue=None):
     try:
         print("Testing buttons")
-        bot.sendMessage(chat_id=update.message.chat_id, text="Testing buttons", reply_markup=telegram.ReplyKeyboardMarkup([[KeyboardButton("Hola"), KeyboardButton("no")]]))
-    except Exception as ex:
-        print(ex)
-
-
-def getChatId(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text=update.message.chat_id)
-
-def help(bot, update):
-    helpText = """
-        Para refrescarte la memoria:
-        \t/greeting: Te saluda con mucho salero
-        \t/chiste: Alegrate el día con un chiste (puede que sea bastante malo)
-        \t/meteteCon nombre: Hasta los huevos de alguien del grupo pero sin valor para soltarle una bordería?
-        \t/piropo: Qué mejor para alegrarte el día que un piropo con arte?
-        \t/diles: Me haces decir cosas aunque no esté en absoluto de acuerdo
-    """
-    bot.sendMessage(chat_id=update.message.chat_id, text=helpText)
-
-def error(bot, update, err):
-    bot.sendMessage(chat_id=update.message.chat_id, text="He petado de mala manera... Si podéis decírselo a Antonio")
-    print('Update "%s" caused error "%s"' % (update, err))
-
-# Timers
-schedule.every().day.at("11:37").do(claratorio)
+        bot.sendMessage(chat_id=update.message.chat_id, text="Testing buttons", reply_markup=telegram.ReplyKeyboardMarkup([[KeyboardButton("Ho

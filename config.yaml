@@ -4,4 +4,4 @@ db:
   user: tontico
   pass: tonticodb987
 others:
-  groupsChatPath: ./chats
+  groupsChatP
